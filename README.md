@@ -7,7 +7,7 @@ More coming in a few days.
 <br><br>
 Note: Most (if not all) functions require the "ImportantValues.vb" file to run properly.
 <br><br>
-This project uses my RegexCalc math parser (which can be found on my GitHub page.)
+This project uses (and includes) my RegexCalc math parser. The main project for this can be found on my GitHub page.
 <br><br>
 LICENSING: Use it for whatever you like, as long as you give me credit by name. One restriction: no profit can be made off of these files by themselves. (Profiting off of derivative works is fine.)
 <br><br>
@@ -28,7 +28,7 @@ The member values of this class are self-explanatory. By default, they are initi
 IsCurrency() - Checks if the current item is a common currency item (either a type of Metal, or a Supply Crate Key)
 <br>
 IsNull() - Returns TRUE if ALL important values of the item are equal to their null values, FALSE otherwise.
-<br>
+<br><br>
 [OPTradeObject.vb]
 <br>
 Once again, the member values of this class are self-explanatory and its default values are either -1 (for numbers) or "" (for strings).
@@ -47,7 +47,7 @@ IsCurrency() - See OPItemObject's method of the same name
 IsNull() - See OPItemObject's method of the same name
 <br><br>
 [PriceConverter.vb]
-PriceParse() - When passed a string, this method will attempt to extract a price (in terms of TF2 Warehouse Credits) from the string. (E.g. "3.66 ref" --> "3.66*4500" --> "16470")
+<br>PriceParse() - When passed a string, this method will attempt to extract a price (in terms of TF2 Warehouse Credits) from the string. (E.g. "3.66 ref" --> "3.66*4500" --> "16470")
 <br>However, it can make mistakes (especially if fed input that doesn't contain a price or an item name it doesn't recognize)
 <br>NOTE: Item names must be formatted as either "bprice(Item Name)" or "sprice(Item Name)".
 <br>bprice() - Price to BUY the item from TF2 Warehouse
