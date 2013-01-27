@@ -57,7 +57,9 @@ PriceParse() - When passed a string, this method will attempt to extract a price
                from the string. (E.g. if Refined Metal costs 4500 Warehouse Credits, "3.66 ref" becomes "3.66*4500" ,
                which ends up as "16470") However, it can make mistakes, especially if fed input that doesn't contain 
                a price or an item name it doesn't recognize
-                  NOTE: Item names must be formatted as either "bprice(Item Name)" or "sprice(Item Name)".
+                  NOTE: Item names (except those defined as currency items in ImportantValues.vb) must be formatted
+                  as either "bprice(Item Name)" or "sprice(Item Name)". The item names do not have to be exact. (E.g.
+                  "buds" will be converted to "Earbuds", and "bills" or "bill's" will be converted to "Bill's Hat")
                      bprice() - Price to BUY the item from TF2 Warehouse
                      sprice() - Price to SELL the item to TF2 Warehouse
 </pre>
