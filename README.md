@@ -11,7 +11,7 @@ This project uses (and includes) my RegexCalc math parser. The main project for 
 <br><br>
 LICENSING: Use it for whatever you like, as long as you give me credit by name. One restriction: no profit can be made off of these files by themselves. (Profiting off of derivative works is fine.)
 <br><br>Use at your own risk. Finally: "Do, or do not. There is no try." - Yoda
-<b>======== API classes ========</b><br>
+<br><br><b>======== API classes ========</b><br>
 [Warehouse API - WHInteraction.vb]
 To use this API, first call its GetNewWHData() method. This method will download item data from TF2 Warehouse into the program.
 The downloaded data is stored as a list of WHItemObjects in the class' WHDataCache member variable.
