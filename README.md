@@ -9,7 +9,8 @@ Note: Most (if not all) functions require the "ImportantValues.vb" file to run p
 <br><br>
 This project uses (and includes) my RegexCalc math parser. The main project for this can be found on my GitHub page.
 <br><br>
-LICENSING: Use it for whatever you like, as long as you give me credit by name. One restriction: no profit can be made off of these files by themselves. (Profiting off of derivative works is fine.)
+LICENSING: Use it for whatever you like, as long as you give me credit by name. One restriction: no profit can be made 
+off of these files by themselves. (Profiting off of derivative works is fine; item trading bots are encouraged.)
 Use at your own risk. <br><br><i>Finally: "Do, or do not. There is no try."</i>
 <br><br><b>======== API classes ========</b><br>
 [Warehouse API - WHInteraction.vb]
