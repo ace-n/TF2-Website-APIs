@@ -1,4 +1,5 @@
 ﻿Imports System.Text.RegularExpressions
+Imports System.Drawing
 
 ' This class converts price strings into item representations using some simple NLP
 '   Currently, it uses arrays to store things. Text files would be a better choice because of the sheer volume of data involved.
@@ -26,13 +27,13 @@ Public Class PriceParser
 
         ' Subtraction
         Input = Regex.Replace(Input, "(?<=\d+)\s+(?=[a-z])", "*")
-        For Each S As String In SynonymsList.Synonyms_AndNot
+        For Each S As String In ImportantValues.Synonyms_AndNot
             Input = Regex.Replace(Input, "(?<=(\A|\s))" & S & "(?=(\s|\Z))", "-")
         Next
 
         ' Addition
         Input = Regex.Replace(Input, "(?<=[a-z])\s+(?=\d+)", "+")
-        For Each S As String In SynonymsList.Synonyms_And
+        For Each S As String In ImportantValues.Synonyms_And
             Input = Regex.Replace(Input, "(?<=(\A|\s))" & S & "(?=(\s|\Z))", "+")
         Next
 
@@ -40,35 +41,35 @@ Public Class PriceParser
         Dim Replacement As String
 
         ' Craft hats
-        Replacement = Math.Floor(SynonymsList.Value_Metal3 * SynonymsList.RefinedPerCraftHat).ToString
-        For Each S As String In SynonymsList.Synonyms_CraftHats
+        Replacement = Math.Floor(ImportantValues.Value_Metal3 * ImportantValues.RefinedPerCraftHat).ToString
+        For Each S As String In ImportantValues.Synonyms_CraftHats
             Input = Regex.Replace(Input, "((s|b)price\(|(?<=(\*))|\s|\A)" & S & "(s|\)|)", Replacement, RegexOptions.IgnoreCase)
         Next
 
         ' Keys
-        Replacement = SynonymsList.KeyValue.ToString
-        For Each S As String In SynonymsList.Synonyms_Key
+        Replacement = ImportantValues.KeyValue.ToString
+        For Each S As String In ImportantValues.Synonyms_Key
             Input = Regex.Replace(Input, "((s|b)price\(|(?<=(\*))|\s|\A)" & S & "(s|\)|)", Replacement, RegexOptions.IgnoreCase)
         Next
 
         ' Metal
-        Replacement = SynonymsList.Value_Metal3.ToString & "*" & SynonymsList.WeaponPriceWHc.ToString
-        For Each S As String In SynonymsList.Synonyms_Metal3
+        Replacement = ImportantValues.Value_Metal3.ToString & "*" & ImportantValues.WeaponPriceWHc.ToString
+        For Each S As String In ImportantValues.Synonyms_Metal3
             Input = Regex.Replace(Input, "((s|b)price\(|(?<=(\*))|\s|\A)" & S & "(s|\)|)", Replacement, RegexOptions.IgnoreCase)
         Next
 
-        Replacement = SynonymsList.Value_Metal2.ToString & "*" & SynonymsList.WeaponPriceWHc.ToString
-        For Each S As String In SynonymsList.Synonyms_Metal2
+        Replacement = ImportantValues.Value_Metal2.ToString & "*" & ImportantValues.WeaponPriceWHc.ToString
+        For Each S As String In ImportantValues.Synonyms_Metal2
             Input = Regex.Replace(Input, "((s|b)price\(|(?<=(\*))|\s)" & S & "(s|\)|)", Replacement, RegexOptions.IgnoreCase)
         Next
 
-        Replacement = SynonymsList.Value_Metal1.ToString & "*" & SynonymsList.WeaponPriceWHc.ToString
-        For Each S As String In SynonymsList.Synonyms_Metal1
+        Replacement = ImportantValues.Value_Metal1.ToString & "*" & ImportantValues.WeaponPriceWHc.ToString
+        For Each S As String In ImportantValues.Synonyms_Metal1
             Input = Regex.Replace(Input, "((s|b)price\(|(?<=(\*))|\s|\A)" & S & "(s|\)|)", Replacement, RegexOptions.IgnoreCase)
         Next
 
-        Replacement = SynonymsList.Value_Weapon.ToString & "*" & SynonymsList.WeaponPriceWHc.ToString
-        For Each S As String In SynonymsList.Synonyms_Weapon
+        Replacement = ImportantValues.Value_Weapon.ToString & "*" & ImportantValues.WeaponPriceWHc.ToString
+        For Each S As String In ImportantValues.Synonyms_Weapon
             Input = Regex.Replace(Input, "((s|b)price\(|(?<=(\*))|\s|\A)" & S & "(s|\)|)", Replacement, RegexOptions.IgnoreCase)
             'Input = Regex.Replace(Input, "\*" & S & "(s|\)|)", Replacement, RegexOptions.IgnoreCase)
         Next
@@ -89,12 +90,12 @@ Public Class PriceParser
             ' Find the price of the current match
             Dim ItemIdx As Integer = -1
             Dim BestSimilarity As Double = 0.6
-            For i = 0 To WHInteraction..Count - 1
+            For i = 0 To WHInteraction.WHDataCache.Count - 1
 
-                Dim W As WHListingObject = WHInteraction.WHItemListings.Item(i)
+                Dim W As WHListingObject = WHInteraction.WHDataCache.Item(i)
 
                 ' Uses fuzzy search
-                Dim FLS As Point = TradeComprehender.FindLongestSequence(W.Name, CurName)
+                Dim FLS As Point = FindLongestSequence(W.Name, CurName)
 
                 Dim TempSimilarity As Double = FLS.Y / Math.Max(W.Name.Length, CurName.Length)
                 If TempSimilarity > BestSimilarity AndAlso FLS.X < 4 Then
@@ -109,7 +110,7 @@ Public Class PriceParser
             Input = Input.Remove(PriceMatch.Index, PriceMatch.Length)
             If ItemIdx <> -1 Then
 
-                CurWHListing = WHInteraction.WHItemListings.Item(ItemIdx)
+                CurWHListing = WHInteraction.WHDataCache.Item(ItemIdx)
                 If PriceMatch.Value.Chars(0) = "b"c Then
                     Input = Input.Insert(PriceMatch.Index, CurWHListing.BuyFromWHc.ToString)
                 Else
@@ -157,5 +158,50 @@ Public Class PriceParser
         Return Input
 
     End Function
+
+    ' Sequence finder, used for fuzzy searches
+    Public Shared Function FindLongestSequence(ByRef Haystack As String, ByRef Needle As String) As Point
+
+        ' X = Longest sequence start; Y = Longest sequence length
+        Dim ReturnPoint As New Point(0, 0)
+
+        ' Longest complete sequence
+        Dim LongestSeqLen As Integer = 0
+
+        For i = 0 To Haystack.Length - 1
+
+            ' Longest length in the current string position
+            Dim TempLen As Integer = 0
+
+            ' Iteration
+            For j = 0 To Needle.Length - 1
+
+                ' Exception handler
+                If i + TempLen >= Haystack.Length Then
+                    Exit For
+                End If
+
+                ' Equality check
+                If Haystack.Chars(i + TempLen) = Needle.Chars(j) Then
+                    TempLen += 1
+                ElseIf TempLen > 0 Then
+                    Exit For
+                End If
+
+            Next
+
+            ' Longest length so far
+            If TempLen > ReturnPoint.Y Then
+                ReturnPoint.X = i
+                ReturnPoint.Y = TempLen
+            End If
+
+        Next
+
+        ' Return
+        Return ReturnPoint
+
+    End Function
+
 
 End Class
