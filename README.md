@@ -3,8 +3,6 @@ tf2-website-apis
 
 Web-scraping APIs used to fetch data with TF2 Outpost and TF2 Warehouse.
 <br><br>
-More coming in a few days.
-<br><br>
 Note: Most (if not all) functions require the "ImportantValues.vb" file to run properly.
 <br><br>
 This project uses (and includes) my RegexCalc math parser. The main project for this can be found on my GitHub page.
